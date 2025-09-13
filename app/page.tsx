@@ -1,103 +1,90 @@
-import Image from "next/image";
+import Link from "next/link";
+import MainContainer from "@/components/layout/MainContainer";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import HeroBanner from "@/components/hero/HeroBanner";
+import PropertyGrid from "@/components/property/PropertyGrid";
+import { PropertyService } from "@/lib/contentstack";
+import { Metadata } from "next";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Home | PropertyPulse - Find Your Dream Property in Mumbai",
+  description: "PropertyPulse is Mumbai's premier real estate platform. Browse luxury apartments, villas, penthouses and commercial properties.",
+};
+
+export default async function Home() {
+  // Fetch featured properties (first 6)
+  const allProperties = await PropertyService.getAllProperties();
+  const featuredProperties = allProperties.slice(0, 6);
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <>
+      <Header />
+      <main>
+        <HeroBanner 
+          title="Find Your Dream Home in Mumbai"
+          subtitle="Discover premium properties in the city's most desirable locations"
+          backgroundImage="https://images.unsplash.com/photo-1571055107559-3e67626fa8be?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+          showSearch={true}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        
+        <div className="bg-neutral-50">
+          <MainContainer>
+            {/* Featured Properties Section */}
+            <section className="py-20">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl font-bold text-neutral-900 mb-4 font-heading">
+                  Featured Properties
+                </h2>
+                <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+                  Handpicked premium properties from Mumbai&apos;s most prestigious locations
+                </p>
+              </div>
+              
+              <PropertyGrid properties={featuredProperties} />
+              
+              {featuredProperties.length > 0 && (
+                <div className="text-center mt-12">
+                  <Link
+                    href="/properties"
+                    className="inline-flex items-center bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-medium hover:shadow-large"
+                  >
+                    View All Properties
+                    <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
+            </section>
+          </MainContainer>
         </div>
+          
+        <MainContainer>
+          {/* CTA Section */}
+          <section className="py-20">
+            <div className="bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white p-12 md:p-16 rounded-3xl text-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="relative z-10">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 font-heading">
+                  Ready to find your dream property?
+                </h2>
+                <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90">
+                  Let our experts help you navigate Mumbai&apos;s real estate market and find the perfect home for you.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button className="bg-white text-primary-600 hover:bg-neutral-100 font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-large hover:shadow-xl">
+                    📞 Contact An Agent
+                  </button>
+                  <button className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold py-4 px-8 rounded-xl transition-all duration-200">
+                    📧 Get Free Consultation
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </MainContainer>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      <Footer />
+    </>
   );
 }
