@@ -6,6 +6,10 @@ import HeroBanner from "@/components/hero/HeroBanner";
 import PropertyGrid from "@/components/property/PropertyGrid";
 import { PropertyService } from "@/lib/contentstack";
 import { Metadata } from "next";
+import PropertyChatWidget from "@/components/chat/PropertyChatWidget";
+
+
+
 
 export const metadata: Metadata = {
   title: "Home | PropertyPulse - Find Your Dream Property in Mumbai",
@@ -16,6 +20,7 @@ export default async function Home() {
   // Fetch featured properties (first 6)
   const allProperties = await PropertyService.getAllProperties();
   const featuredProperties = allProperties.slice(0, 6);
+
   return (
     <>
       <Header />
@@ -85,6 +90,14 @@ export default async function Home() {
         </MainContainer>
       </main>
       <Footer />
+      
+      {/* PropertyPulse Chat Assistant */}
+      <PropertyChatWidget 
+        apiKey={process.env.NEXT_PUBLIC_CONTENTSTACK_API_KEY}
+        deliveryToken={process.env.NEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN}
+        environment={process.env.NEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT}
+        openaiApiKey={process.env.NEXT_PUBLIC_OPENAI_API_KEY}
+      />
     </>
   );
 }

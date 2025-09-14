@@ -1,0 +1,26 @@
+{
+  "contentstack": {
+    "apiKey": "blt500f2c67aa373069",
+    "deliveryToken": "csd109aa63c366c562c6fa2633",
+    "environment": "development",
+    "region": "eu",
+    "stackName": "PropertyPulse"
+  },
+  "llm": {
+    "provider": "openai",
+    "apiKey": "placeholder",
+    "model": "gpt-4"
+  },
+  "widget": {
+    "personality": "professional",
+    "position": "bottom-right",
+    "primaryColor": "#3B82F6",
+    "welcomeMessage": "Hi! I'm your PropertyPulse assistant. I can help you find the perfect property in Mumbai. What type of property are you looking for?",
+    "enableMCP": true,
+    "enableAnalytics": true
+  },
+  "authMethod": "manual",
+  "version": "1.0.0",
+  "createdAt": "2024-09-14T12:00:00.000Z",
+  "setupComplete": true
+}
