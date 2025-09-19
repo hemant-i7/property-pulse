@@ -7,6 +7,9 @@ import PropertyGrid from "@/components/property/PropertyGrid";
 import AgentGrid from "@/components/agent/AgentGrid";
 import { PropertyService, AgentService, BlogService, TestimonialService } from "@/lib/contentstack";
 import { Metadata } from "next";
+import { ContentPulseProvider, SmartChatAgent } from 'contentpulse-chat-sdk';
+
+
 
 
 
@@ -21,6 +24,8 @@ export default async function Home() {
   // Fetch featured properties (first 6)
   const allProperties = await PropertyService.getAllProperties();
   const featuredProperties = allProperties.slice(0, 6);
+  console.log(featuredProperties);
+
   
   // Fetch agents (first 4 for homepage)
   const allAgents = await AgentService.getAllAgents();
@@ -37,6 +42,59 @@ export default async function Home() {
   return (
     <>
       <Header />
+
+      <ContentPulseProvider
+      agentId="68cc32341ae74bab9671ad5a"
+      apiBaseUrl="http://localhost:8000"
+      darkMode={true}
+      visualConfig={{
+        // Trigger button (the chat opener)
+        trigger: {
+          backgroundColor: '#007bff',
+          size: 'large',
+          icon: '💬', // Chat bubble emoji
+        },
+        
+        // Chat window
+        window: {
+          width: '450px',
+          backgroundColor: '#ffffff',
+        },
+        
+        // Header styling
+        header: {
+          backgroundColor: '#007bff',
+          textColor: '#ffffff',
+        },
+        
+        // Send button configuration
+        sendButton: {
+          backgroundColor: '#007bff',
+          hoverBackgroundColor: '#0056b3',
+          textColor: '#ffffff',
+          size: '44px',
+          icon: '➤', // Arrow emoji as fallback
+        },
+        
+        // Message styling
+        userMessage: {
+          backgroundColor: '#007bff',
+          textColor: '#ffffff',
+        },
+        assistantMessage: {
+          backgroundColor: '#f8f9fa',
+          textColor: '#212529',
+        },
+      }}
+    >
+      <SmartChatAgent 
+        apiKey="blt299817f8cfd244c4"
+        title="PropertyPulse Assistant"
+        subtitle="Powered by ContentPulse"
+        placeholder="Ask me anything..."
+        welcomeMessage="Hello! I'm your property assistant. How can I help?"
+      />
+    </ContentPulseProvider>
 
 
       <main>
