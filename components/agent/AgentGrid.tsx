@@ -1,6 +1,6 @@
 'use client';
 
-import { Agent } from '@/types/agent';
+import { Agent } from '@/lib/fetchers/agents';
 import AgentCard from './AgentCard';
 
 interface AgentGridProps {

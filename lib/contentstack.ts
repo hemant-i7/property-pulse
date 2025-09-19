@@ -21,7 +21,7 @@ export interface Property {
   location: string;
   price: string;
   size: string;
-  description: string; // Updated to match actual CS schema (simple text field)
+  description: string | any; // Can be string or rich text object
   amenities: string;
   url: string;
   realeted_tags: string; // Updated to match actual CS field name
@@ -134,9 +134,28 @@ export class PropertyService {
     }
   }
 
-  // Extract description text (now simple string field)
+  // Extract description text from rich text object
   static extractDescriptionText(description: Property['description']): string {
-    return description || 'No description available';
+    if (typeof description === 'string') {
+      return description;
+    }
+    
+    if (description && typeof description === 'object' && description.children) {
+      // Extract text from rich text object
+      const extractText = (node: any): string => {
+        if (node.text) {
+          return node.text;
+        }
+        if (node.children && Array.isArray(node.children)) {
+          return node.children.map(extractText).join('');
+        }
+        return '';
+      };
+      
+      return extractText(description) || 'No description available';
+    }
+    
+    return 'No description available';
   }
 }
 
