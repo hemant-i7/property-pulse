@@ -47,6 +47,18 @@ export default async function Home() {
       agentId="68cc32341ae74bab9671ad5a"
       apiBaseUrl="http://localhost:8000"
       darkMode={true}
+       // Enable lead capture
+       enableLeadCapture={true}
+      
+       // Configure lead capture settings
+       leadCaptureSettings={{
+         messageThreshold: 1, // Show call prompt after 2 messages
+         enableCallPrompts: true,
+         callPromptMessage: "Would you like to speak with our team?",
+         dataFields: {
+           phone: true, // Required for calls
+         },
+       }}
       visualConfig={{
         // Trigger button (the chat opener)
         trigger: {
