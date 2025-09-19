@@ -45,6 +45,9 @@ export default function Header() {
             <Link href="/properties" className="hover:text-primary">
               Properties
             </Link>
+            <Link href="/agents" className="hover:text-primary">
+              Agents
+            </Link>
             <Link href="/about" className="hover:text-primary">
               About
             </Link>

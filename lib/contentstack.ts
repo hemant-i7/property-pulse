@@ -1,13 +1,14 @@
 import Contentstack from 'contentstack';
 
-// Initialize Contentstack with EU region
+// Initialize Contentstack with EU region using hardcoded credentials
+// These are the same credentials used by the working properties
 const Stack = Contentstack.Stack(
-  process.env.NEXT_PUBLIC_CONTENTSTACK_API_KEY || '',
-  process.env.NEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN || '',
-  process.env.NEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT || 'development'
+  'blt500f2c67aa373069',
+  'csd109aa63c366c562c6fa2633',
+  'development'
 );
 
-// Set the region to EU since your endpoint is eu-cdn.contentstack.com
+// Set the region to EU since your stack is in EU region
 Stack.setHost('eu-api.contentstack.com');
 
 export default Stack;
@@ -20,141 +21,22 @@ export interface Property {
   location: string;
   price: string;
   size: string;
-  description: {
-    type: string;
-    attrs: Record<string, unknown>;
-    uid: string;
-    children: Array<{
-      type: string;
-      attrs: Record<string, unknown>;
-      uid: string;
-      children: Array<{
-        text: string;
-      }>;
-    }>;
-    _version: number;
-  };
+  description: string; // Updated to match actual CS schema (simple text field)
   amenities: string;
   url: string;
+  realeted_tags: string; // Updated to match actual CS field name
   locale: string;
   created_at: string;
   updated_at: string;
   _version: number;
   tags: string[];
-  publish_details: Array<{
-    environment: string;
-    locale: string;
-    time: string;
-    user: string;
-    version: number;
-  }>;
+  created_by: string;
+  updated_by: string;
+  ACL: Record<string, unknown>;
+  _in_progress: boolean;
 }
 
-// Fallback data for development/demo
-const fallbackProperties: Property[] = [
-  {
-    uid: 'demo-villa-juhu',
-    title: 'Luxury Villa in Juhu',
-    type: 'Villa',
-    location: 'Juhu, Mumbai',
-    price: '₹12,00,00,000',
-    size: '3500 sq. ft',
-    description: {
-      type: 'doc',
-      attrs: {},
-      uid: 'villa_desc',
-      children: [
-        {
-          type: 'p',
-          attrs: {},
-          uid: 'villa_para',
-          children: [
-            {
-              text: 'Premium villa with private garden and pool, located in the prestigious Juhu area. This luxurious property features 4 bedrooms, a spacious living area, and direct beach access. Perfect for families seeking luxury and privacy.'
-            }
-          ]
-        }
-      ],
-      _version: 2
-    },
-    amenities: 'Garden, Pool, Security, Clubhouse, Beach Access',
-    url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80',
-    locale: 'en-us',
-    created_at: '2025-09-13T17:25:46.501Z',
-    updated_at: '2025-09-13T18:45:07.705Z',
-    _version: 2,
-    tags: [],
-    publish_details: []
-  },
-  {
-    uid: 'demo-apartment-bandra',
-    title: 'Modern Apartment in Bandra',
-    type: 'Apartment',
-    location: 'Bandra West, Mumbai',
-    price: '₹2,50,00,000',
-    size: '1200 sq. ft',
-    description: {
-      type: 'doc',
-      attrs: {},
-      uid: 'apt_desc',
-      children: [
-        {
-          type: 'p',
-          attrs: {},
-          uid: 'apt_para',
-          children: [
-            {
-              text: 'Contemporary 2BHK apartment in the heart of Bandra West. Features modern amenities, excellent connectivity, and stunning city views. Perfect for young professionals and small families.'
-            }
-          ]
-        }
-      ],
-      _version: 2
-    },
-    amenities: 'Gym, Swimming Pool, Parking, Security, Elevator',
-    url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    locale: 'en-us',
-    created_at: '2025-09-13T17:25:46.501Z',
-    updated_at: '2025-09-13T18:45:07.705Z',
-    _version: 2,
-    tags: [],
-    publish_details: []
-  },
-  {
-    uid: 'demo-penthouse-worli',
-    title: 'Penthouse in Worli',
-    type: 'Penthouse',
-    location: 'Worli, Mumbai',
-    price: '₹8,50,00,000',
-    size: '2800 sq. ft',
-    description: {
-      type: 'doc',
-      attrs: {},
-      uid: 'pent_desc',
-      children: [
-        {
-          type: 'p',
-          attrs: {},
-          uid: 'pent_para',
-          children: [
-            {
-              text: 'Spectacular penthouse with panoramic views of the Mumbai skyline and Arabian Sea. Features premium finishes, private terrace, and world-class amenities. The epitome of luxury living.'
-            }
-          ]
-        }
-      ],
-      _version: 2
-    },
-    amenities: 'Private Terrace, Jacuzzi, Concierge, Valet Parking, Sky Lounge',
-    url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    locale: 'en-us',
-    created_at: '2025-09-13T17:25:46.501Z',
-    updated_at: '2025-09-13T18:45:07.705Z',
-    _version: 2,
-    tags: [],
-    publish_details: []
-  }
-];
+// No fallback data - using real Contentstack data only
 
 // Service functions
 export class PropertyService {
@@ -163,11 +45,10 @@ export class PropertyService {
     try {
       const Query = Stack.ContentType('properties').Query();
       const result = await Query.toJSON().find();
-      return result[0] || fallbackProperties;
+      return result[0] || [];
     } catch (error) {
       console.error('Error fetching properties:', error);
-      console.log('Using fallback properties for demo');
-      return fallbackProperties;
+      throw new Error('Failed to fetch properties from Contentstack');
     }
   }
 
@@ -179,9 +60,7 @@ export class PropertyService {
       return result || null;
     } catch (error) {
       console.error('Error fetching property:', error);
-      // Return fallback property if available
-      const fallback = fallbackProperties.find(p => p.uid === uid);
-      return fallback || null;
+      throw new Error(`Failed to fetch property with UID: ${uid}`);
     }
   }
 
@@ -194,10 +73,7 @@ export class PropertyService {
       return result[0] || [];
     } catch (error) {
       console.error('Error fetching properties by location:', error);
-      // Return filtered fallback properties
-      return fallbackProperties.filter(p => 
-        p.location.toLowerCase().includes(location.toLowerCase())
-      );
+      throw new Error(`Failed to fetch properties for location: ${location}`);
     }
   }
 
@@ -210,10 +86,7 @@ export class PropertyService {
       return result[0] || [];
     } catch (error) {
       console.error('Error fetching properties by type:', error);
-      // Return filtered fallback properties
-      return fallbackProperties.filter(p => 
-        p.type.toLowerCase() === type.toLowerCase()
-      );
+      throw new Error(`Failed to fetch properties for type: ${type}`);
     }
   }
 
@@ -257,50 +130,151 @@ export class PropertyService {
       return properties;
     } catch (error) {
       console.error('Error searching properties:', error);
-      // Return filtered fallback properties
-      let filtered = fallbackProperties;
-      
-      if (filters.location) {
-        filtered = filtered.filter(p => 
-          p.location.toLowerCase().includes(filters.location!.toLowerCase())
-        );
-      }
-      
-      if (filters.type) {
-        filtered = filtered.filter(p => 
-          p.type.toLowerCase() === filters.type!.toLowerCase()
-        );
-      }
-      
-      // Client-side price filtering for fallback data
-      if (filters.minPrice || filters.maxPrice) {
-        filtered = filtered.filter((property: Property) => {
-          const priceStr = property.price.replace(/[₹,]/g, '');
-          const price = parseInt(priceStr);
-          
-          if (filters.minPrice && price < filters.minPrice) return false;
-          if (filters.maxPrice && price > filters.maxPrice) return false;
-          
-          return true;
-        });
-      }
-      
-      return filtered;
+      throw new Error('Failed to search properties');
     }
   }
 
-  // Extract description text from rich text field
+  // Extract description text (now simple string field)
   static extractDescriptionText(description: Property['description']): string {
+    return description || 'No description available';
+  }
+}
+
+// Agent interface based on your Contentstack schema
+export interface Agent {
+  uid: string;
+  title: string;
+  email: string;
+  phone: string;
+  profile_image: string;
+  experience_years: string;
+  specialization: string;
+  locale: string;
+  created_at: string;
+  updated_at: string;
+  _version: number;
+  tags: string[];
+  created_by: string;
+  updated_by: string;
+  ACL: Record<string, unknown>;
+  _in_progress: boolean;
+}
+
+// Agent service functions
+export class AgentService {
+  // Get all agents - using hardcoded data for now since delivery API has issues
+  static async getAllAgents(): Promise<Agent[]> {
     try {
-      return description.children
-        .map(child => 
-          child.children
-            .map(textNode => textNode.text)
-            .join(' ')
-        )
-        .join(' ');
-    } catch {
-      return 'No description available';
+      // For now, return hardcoded agent data since delivery API has issues
+      // This will be replaced once the content type is properly published
+      const hardcodedAgents: Agent[] = [
+        {
+          uid: 'blta38481f184e4caf9',
+          title: 'Priya Sharma',
+          email: 'priya.sharma@propertypulse.com',
+          phone: '+91 98765 43210',
+          profile_image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face',
+          experience_years: '10',
+          specialization: 'Residential Properties, Luxury Apartments, Commercial Real Estate, Property Investment',
+          created_at: '2025-09-19T07:28:45.430Z',
+          updated_at: '2025-09-19T07:30:06.767Z',
+          _version: 3,
+          tags: [],
+          created_by: 'csea0dc458ede7788b',
+          updated_by: 'csea0dc458ede7788b',
+          ACL: {},
+          _in_progress: false,
+          locale: 'en-us'
+        },
+        {
+          uid: 'blte9ae8625ed21a83c',
+          title: 'Rajesh Kumar',
+          email: 'rajesh.kumar@propertypulse.com',
+          phone: '+91 98765 12345',
+          profile_image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
+          experience_years: '12',
+          specialization: 'Commercial Real Estate, Office Spaces, Retail Properties',
+          created_at: '2025-09-19T07:30:32.711Z',
+          updated_at: '2025-09-19T07:30:32.711Z',
+          _version: 1,
+          tags: [],
+          created_by: 'csea0dc458ede7788b',
+          updated_by: 'csea0dc458ede7788b',
+          ACL: {},
+          _in_progress: false,
+          locale: 'en-us'
+        },
+        {
+          uid: 'blt920dcc60871a9ff3',
+          title: 'Anjali Patel',
+          email: 'anjali.patel@propertypulse.com',
+          phone: '+91 98765 56789',
+          profile_image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face',
+          experience_years: '8',
+          specialization: 'Residential Properties, First-time Buyers, Property Investment',
+          created_at: '2025-09-19T07:30:33.307Z',
+          updated_at: '2025-09-19T07:30:33.307Z',
+          _version: 1,
+          tags: [],
+          created_by: 'csea0dc458ede7788b',
+          updated_by: 'csea0dc458ede7788b',
+          ACL: {},
+          _in_progress: false,
+          locale: 'en-us'
+        },
+        {
+          uid: 'blt82d7bf382d5d598e',
+          title: 'Vikram Singh',
+          email: 'vikram.singh@propertypulse.com',
+          phone: '+91 98765 98765',
+          profile_image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+          experience_years: '15',
+          specialization: 'Luxury Properties, Villas, High-end Commercial Spaces',
+          created_at: '2025-09-19T07:30:33.900Z',
+          updated_at: '2025-09-19T07:30:33.900Z',
+          _version: 1,
+          tags: [],
+          created_by: 'csea0dc458ede7788b',
+          updated_by: 'csea0dc458ede7788b',
+          ACL: {},
+          _in_progress: false,
+          locale: 'en-us'
+        },
+        {
+          uid: 'blt14f269f7eef4bf10',
+          title: 'Meera Reddy',
+          email: 'meera.reddy@propertypulse.com',
+          phone: '+91 98765 11111',
+          profile_image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face',
+          experience_years: '6',
+          specialization: 'Residential Properties, Rental Properties, Property Management',
+          created_at: '2025-09-19T07:30:34.487Z',
+          updated_at: '2025-09-19T07:30:34.487Z',
+          _version: 1,
+          tags: [],
+          created_by: 'csea0dc458ede7788b',
+          updated_by: 'csea0dc458ede7788b',
+          ACL: {},
+          _in_progress: false,
+          locale: 'en-us'
+        }
+      ];
+      
+      return hardcodedAgents;
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+      throw new Error('Failed to fetch agents from Contentstack');
+    }
+  }
+
+  // Get single agent by UID
+  static async getAgentByUid(uid: string): Promise<Agent | null> {
+    try {
+      const agents = await this.getAllAgents();
+      return agents.find(agent => agent.uid === uid) || null;
+    } catch (error) {
+      console.error('Error fetching agent:', error);
+      throw new Error(`Failed to fetch agent with UID: ${uid}`);
     }
   }
 }

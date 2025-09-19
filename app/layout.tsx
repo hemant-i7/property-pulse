@@ -39,13 +39,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${poppins.variable} ${jetbrainsMono.variable} font-sans antialiased bg-neutral-50 text-neutral-900`}
       >
-        <ThemeProvider>
-          <FilterProvider>
-            <ChatProvider apiKey={process.env.NEXT_PUBLIC_CONTENTPULSE_API_KEY}>
-              {children}
-            </ChatProvider>
-          </FilterProvider>
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );

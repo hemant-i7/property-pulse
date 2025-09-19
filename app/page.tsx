@@ -4,9 +4,12 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroBanner from "@/components/hero/HeroBanner";
 import PropertyGrid from "@/components/property/PropertyGrid";
+import AgentGrid from "@/components/agent/AgentGrid";
 import { PropertyService } from "@/lib/contentstack";
+import { getAllAgents } from "@/lib/fetchers/agents";
 import { Metadata } from "next";
-import PropertyChatWidget from "@/components/chat/PropertyChatWidget";
+import { ContentPulseProvider, SmartChatAgent } from '@contentpulse/chat-sdk';
+
 
 
 
@@ -20,10 +23,51 @@ export default async function Home() {
   // Fetch featured properties (first 6)
   const allProperties = await PropertyService.getAllProperties();
   const featuredProperties = allProperties.slice(0, 6);
+  
+  // Fetch agents (first 4 for homepage)
+  const allAgents = await getAllAgents();
+  const featuredAgents = allAgents.slice(0, 4);
 
   return (
     <>
       <Header />
+
+      <ContentPulseProvider
+      agentId="68cc32341ae74bab9671ad5a"
+      apiBaseUrl="http://localhost:8000"
+      darkMode={false} 
+      // visualConfig={{
+      //   trigger: {
+      //     backgroundColor: '#007bff',
+      //     size: 'large',
+      //     icon: '🏠',
+      //   },
+      //   window: {
+      //     width: '450px',
+      //     backgroundColor: '#ffffff',
+      //   },
+      //   header: {
+      //     backgroundColor: '#007bff',
+      //     textColor: '#ffffff',
+      //   },
+      //   userMessage: {
+      //     backgroundColor: '#007bff',
+      //     textColor: '#ffffff',
+      //   },
+      //   assistantMessage: {
+      //     backgroundColor: '#f8f9fa',
+      //     textColor: '#212529',
+      //   },
+      // }}
+    >
+      <SmartChatAgent 
+        apiKey="blt299817f8cfd244c4"
+        title="PropertyPulse Assistant"
+        subtitle="Powered by ContentPulse"
+        placeholder="Ask me anything..."
+        welcomeMessage="Hello! I'm your custom assistant. How can I help?"
+      />
+    </ContentPulseProvider>
       <main>
         <HeroBanner 
           title="Find Your Dream Home in Mumbai"
@@ -63,6 +107,38 @@ export default async function Home() {
             </section>
           </MainContainer>
         </div>
+
+        {/* Featured Agents Section */}
+        <div className="bg-white">
+          <MainContainer>
+            <section className="py-20">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl font-bold text-neutral-900 mb-4 font-heading">
+                  Meet Our Expert Agents
+                </h2>
+                <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+                  Our experienced professionals are here to guide you through every step of your property journey
+                </p>
+              </div>
+              
+              <AgentGrid agents={featuredAgents} />
+              
+              {featuredAgents.length > 0 && (
+                <div className="text-center mt-12">
+                  <Link
+                    href="/agents"
+                    className="inline-flex items-center bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-medium hover:shadow-large"
+                  >
+                    View All Agents
+                    <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
+            </section>
+          </MainContainer>
+        </div>
           
         <MainContainer>
           {/* CTA Section */}
@@ -90,14 +166,10 @@ export default async function Home() {
         </MainContainer>
       </main>
       <Footer />
+
       
       {/* PropertyPulse Chat Assistant */}
-      <PropertyChatWidget 
-        apiKey={process.env.NEXT_PUBLIC_CONTENTSTACK_API_KEY}
-        deliveryToken={process.env.NEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN}
-        environment={process.env.NEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT}
-        openaiApiKey={process.env.NEXT_PUBLIC_OPENAI_API_KEY}
-      />
+      
     </>
   );
 }
