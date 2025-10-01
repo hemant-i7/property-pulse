@@ -20,11 +20,15 @@ export const metadata: Metadata = {
   description: "PropertyPulse is Mumbai's premier real estate platform. Browse luxury apartments, villas, penthouses and commercial properties.",
 };
 
+// Force revalidation every 60 seconds to get fresh data
+export const revalidate = 60;
+
 export default async function Home() {
   // Fetch featured properties (first 6)
   const allProperties = await PropertyService.getAllProperties();
   const featuredProperties = allProperties.slice(0, 6);
-  console.log(featuredProperties);
+  console.log('Total properties fetched:', allProperties.length);
+  console.log('Featured properties:', featuredProperties);
 
   
   // Fetch agents (first 4 for homepage)
@@ -43,70 +47,6 @@ export default async function Home() {
     <>
       <Header />
 
-      <ContentPulseProvider
-      agentId="68cc32341ae74bab9671ad5a"
-      apiBaseUrl="http://localhost:8000"
-      darkMode={true}
-       // Enable lead capture
-       enableLeadCapture={true}
-      
-       // Configure lead capture settings
-       leadCaptureSettings={{
-         messageThreshold: 1, // Show call prompt after 2 messages
-         enableCallPrompts: true,
-         callPromptMessage: "Would you like to speak with our team?",
-         dataFields: {
-           phone: true, // Required for calls
-         },
-       }}
-      visualConfig={{
-        // Trigger button (the chat opener)
-        trigger: {
-          backgroundColor: '#007bff',
-          size: 'large',
-          icon: '💬', // Chat bubble emoji
-        },
-        
-        // Chat window
-        window: {
-          width: '450px',
-          backgroundColor: '#ffffff',
-        },
-        
-        // Header styling
-        header: {
-          backgroundColor: '#007bff',
-          textColor: '#ffffff',
-        },
-        
-        // Send button configuration
-        sendButton: {
-          backgroundColor: '#007bff',
-          hoverBackgroundColor: '#0056b3',
-          textColor: '#ffffff',
-          size: '44px',
-          icon: '➤', // Arrow emoji as fallback
-        },
-        
-        // Message styling
-        userMessage: {
-          backgroundColor: '#007bff',
-          textColor: '#ffffff',
-        },
-        assistantMessage: {
-          backgroundColor: '#f8f9fa',
-          textColor: '#212529',
-        },
-      }}
-    >
-      <SmartChatAgent 
-        apiKey="blt299817f8cfd244c4"
-        title="PropertyPulse Assistant"
-        subtitle="Powered by ContentPulse"
-        placeholder="Ask me anything..."
-        welcomeMessage="Hello! I'm your property assistant. How can I help?"
-      />
-    </ContentPulseProvider>
 
 
       <main>

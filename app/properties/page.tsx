@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description: 'Browse our extensive collection of premium properties in Mumbai',
 };
 
+// Force revalidation every 60 seconds to get fresh data
+export const revalidate = 60;
+
 export default async function PropertiesPage({
   searchParams,
 }: {
@@ -31,6 +34,9 @@ export default async function PropertiesPage({
     minPrice,
     maxPrice,
   });
+  
+  console.log('Properties fetched:', properties.length);
+  console.log('Sample properties:', properties.slice(0, 3));
   
   return (
     <>
